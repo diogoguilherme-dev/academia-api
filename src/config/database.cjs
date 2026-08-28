@@ -1,8 +1,8 @@
 module.exports = {
-	dialect: 'postgress',
+	dialect: 'postgres',
 	host: 'localhost',
 	port: 5432,
-	usename: 'admin',
+	username: 'admin',
 	password: '123456',
 	database: 'academia-db',
 	define: {
