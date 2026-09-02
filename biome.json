@@ -11,11 +11,14 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
-	}, 
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"preset": "recommended"
+			"preset": "recommended",
+			"complexity": {
+				"useOptionalChain": "off"
+			}
 		}
 	},
 	"javascript": {
