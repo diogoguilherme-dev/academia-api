@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import { v4 } from 'uuid';
 import * as Yup from 'yup';
 import Plan from '../models/Plan.js';
@@ -33,6 +34,53 @@ class PlanController {
 		});
 
 		return response.status(201).json(plan);
+	}
+
+	async index(request, response) {
+		try {
+			const plans = await Plan.findAll();
+
+			return response.status(200).json(plans);
+		} catch (err) {
+			return response.status(500).json({ message: err.message });
+		}
+	}
+
+	async show(request, response) {
+		try {
+			const { name } = await request.query;
+
+			const whereClause = name ? { name: { [Op.iLike]: `%${name}%` } } : {};
+
+			const plans = await Plan.findAll({
+				where: whereClause,
+				attributes: ['id', 'name', 'value'],
+			});
+
+			return response.status(200).json(plans);
+		} catch (err) {
+			return response.status(500).json({ message: err.message });
+		}
+	}
+
+	async delete(request, response) {
+		try {
+			const { id } = request.params;
+
+			const plan = await Plan.findOne({
+				where: { id },
+			});
+
+			if (!plan) {
+				return response.status(404).json({ message: 'Enrollment not found.' });
+			}
+
+			await plan.destroy();
+
+			return response.status(204).send();
+		} catch (err) {
+			return response.status(400).json({ message: err.message });
+		}
 	}
 }
 

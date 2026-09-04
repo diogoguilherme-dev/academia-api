@@ -35,7 +35,7 @@ class EnrollmentController {
 			},
 		});
 
-		if (existEnrollment) {
+		if (!existEnrollment) {
 			return response
 				.status(400)
 				.json({ message: 'This registration number already exists.' });
@@ -47,11 +47,70 @@ class EnrollmentController {
 			plan_id: plan_id,
 		});
 
-		return response.status(201).status({
+		return response.status(201).json({
 			id: enrollment.id,
 			user_id: enrollment.user_id,
 			plan_id: enrollment.plan_id,
+			registration_number: enrollment.registration_number,
 		});
+	}
+
+	async index(request, response) {
+		try {
+			const enrollments = await Enrollment.findAll({
+				include: [
+					{ model: User, as: 'user', attributes: ['name', 'email'] },
+					{ model: Plan, as: 'plan', attributes: ['name', 'value'] },
+				],
+			});
+
+			return response.status(200).json(enrollments);
+		} catch (err) {
+			return response.status(400).json({ message: err.message });
+		}
+	}
+
+	async show(request, response) {
+		try {
+			const { registration_number } = request.params;
+
+			const enrollment = await Enrollment.findOne({
+				where: { registration_number },
+				include: [
+					{ model: User, as: 'user', attributes: ['name', 'email'] },
+					{ model: Plan, as: 'plan', attributes: ['name', 'value'] },
+				],
+			});
+
+			if (!enrollment) {
+				return response.status(404).json({ message: 'Enrollment not found.' });
+			}
+
+			return response.status(200).json(enrollment);
+		} catch (err) {
+			console.log(err);
+			return response.status(400).json({ message: err.message });
+		}
+	}
+
+	async delete(request, response) {
+		try {
+			const { registration_number } = request.params;
+
+			const enrollment = await Enrollment.findOne({
+				where: { registration_number },
+			});
+
+			if (!enrollment) {
+				return response.status(404).json({ message: 'Enrollment not found.' });
+			}
+
+			await enrollment.destroy();
+
+			return response.status(204).send();
+		} catch (err) {
+			return response.status(400).json({ message: err.message });
+		}
 	}
 }
 

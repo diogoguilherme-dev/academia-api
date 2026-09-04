@@ -1,4 +1,5 @@
 import Sequelize, { Model } from 'sequelize';
+import enrollmentHook from '../../hooks/enrollmentHook.js';
 
 class Enrollment extends Model {
 	static init(sequelize) {
@@ -17,11 +18,16 @@ class Enrollment extends Model {
 					type: Sequelize.UUID,
 					references: { model: 'plans', key: 'id' },
 				},
+				registration_number: Sequelize.INTEGER,
 			},
 			{
 				sequelize,
 			},
 		);
+
+		this.addHook('beforeCreate', enrollmentHook);
+
+		return this;
 	}
 
 	static associate(models) {
