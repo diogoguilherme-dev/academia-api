@@ -55,7 +55,7 @@ class EnrollmentController {
 		});
 	}
 
-	async index(request, response) {
+	async index(_request, response) {
 		try {
 			const enrollments = await Enrollment.findAll({
 				include: [
